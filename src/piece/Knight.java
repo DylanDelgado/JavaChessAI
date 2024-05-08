@@ -19,7 +19,9 @@ public class Knight extends Piece {
         if(isWithinBoard(targetCol, targetRow)){
             if((Math.abs(targetCol-preCol) == 2 && Math.abs(targetRow-preRow) == 1) ||
             Math.abs(targetCol-preCol) == 1 && Math.abs(targetRow-preRow) == 2){
-                return true;
+                if(isValidSquare(targetCol, targetRow)){
+                    return true;
+                }
             }
         } 
         return false;

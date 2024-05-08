@@ -44,11 +44,11 @@ public class GamePanel extends JPanel implements Runnable {
         pieces.add(new Pawn(white,5,6));
         pieces.add(new Pawn(white,6,6));
         pieces.add(new Pawn(white,7,6));
-        pieces.add(new rook(white,0,7));
+        pieces.add(new rook(white,0,4));
         pieces.add(new Knight(white,1,7));
         pieces.add(new Bishop(white,2,7));
         pieces.add(new Queen(white,3,7));
-        pieces.add(new King(white,4,4));
+        pieces.add(new King(white,4,7));
         pieces.add(new Bishop(white,5,7));
         pieces.add(new Knight(white,6,7));
         pieces.add(new rook(white,7,7));
@@ -127,13 +127,16 @@ public class GamePanel extends JPanel implements Runnable {
         if(mouse.pressed == false){
             if(activeP != null){
                 if(validSquare){
+                    if(activeP.hitP != null){
+                        simPieces.remove(activeP.hitP.getIndex());
+                    }
                     activeP.updatePosition();
+                    copyPiece(simPieces, pieces);
+
                 } else{
                     activeP.resetPosition();
                 }
-
                 activeP = null;
-
             }
         }    
     }
@@ -143,14 +146,21 @@ public class GamePanel extends JPanel implements Runnable {
         
         canMove = false;
         validSquare = false;
-        
+        activeP.hitP = null;
+        copyPiece(pieces, simPieces); // Copy pieces into the simulation, otherwise hovering over a pieces will remove it.
+
         activeP.x = mouse.x - Board.HalfSquareSize;
         activeP.y = mouse.y - Board.HalfSquareSize;
         activeP.col = activeP.getCol(activeP.x);
         activeP.row = activeP.getRow(activeP.y);
 
         if(activeP.canMove(activeP.col,activeP.row)){
+            
             canMove = true;
+
+            if(activeP.hittingP != null){
+                activeP.hitP = activeP.hittingP;
+            }
             validSquare = true;
         }
     }

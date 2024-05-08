@@ -19,7 +19,9 @@ public class rook extends Piece {
         if(isWithinBoard(targetCol, targetRow)){
             if((preCol == targetCol && preRow != targetRow) ||
             preCol != targetCol && preRow == targetRow){
+                if(isValidSquare(targetCol, targetRow) && pieceIsOnStraightLine(targetCol, targetRow) == false){
                     return true;
+                }
             }
         } 
         return false;

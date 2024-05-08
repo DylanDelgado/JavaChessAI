@@ -18,7 +18,9 @@ public class Queen extends Piece {
         if(isWithinBoard(targetCol, targetRow)){
             if((preCol == targetCol && preRow != targetRow) ||
             preCol != targetCol && preRow == targetRow || (Math.abs(preCol-targetCol) == Math.abs(preRow-targetRow) && Math.abs(preCol-targetCol) != 0)){
+                if(isValidSquare(targetCol, targetRow)){
                     return true;
+                }
             }
         } 
         return false;

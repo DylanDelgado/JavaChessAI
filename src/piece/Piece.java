@@ -16,6 +16,7 @@ public class Piece {
     public int col, row, preCol, preRow;
     public int color;
     public Piece hittingP;
+    public Piece hitP;
 
     public Piece(int color, int col, int row){
         this.color = color;
@@ -83,6 +84,65 @@ public class Piece {
         } else {
             return false;
         }
+    }
+
+    public boolean isSameSquare(int targetCol, int targetRow){
+        if(targetCol == col && targetRow == row){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean pieceIsOnStraightLine(int targetCol, int targetRow) {
+        // Check left movement
+        for(int c = preCol-1; c> targetCol; c--){
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.col == c && piece.row == targetRow){
+                    if(piece != this) {
+                        hittingP = piece;
+                        return true;
+                    }
+                    
+                    
+                }
+            }
+        }
+        // Check right movement
+        for(int c = preCol+1; c < targetCol; c++){
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.col == c && piece.row == targetRow){
+                    if(piece != this) {
+                        hittingP = piece;
+                        return true;
+                    }
+                }
+            }
+        }
+        // Check up movement
+        for(int r = preRow-1; r> targetRow; r--){
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.row == r && piece.col == targetCol){
+                    if(piece != this) {
+                        hittingP = piece;
+                        return true;
+                    }
+                    
+                    
+                }
+            }
+        }
+        // Check down movement
+        for(int r = preRow+1; r < targetRow; r++){
+            for(Piece piece : GamePanel.simPieces) {
+                if(piece.row == r && piece.col == targetCol){
+                    if(piece != this) {
+                        hittingP = piece;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     public Piece gettingHit(int targetCol, int targetRow){
