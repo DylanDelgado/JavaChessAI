@@ -17,6 +17,7 @@ public class Piece {
     public int color;
     public Piece hittingP;
     public Piece hitP;
+    public boolean moved;
 
     public Piece(int color, int col, int row){
         this.color = color;
@@ -66,6 +67,7 @@ public class Piece {
         y = getY(row);
         preCol = getCol(x);
         preRow = getRow(y);
+        moved = true;
     }
     public void resetPosition(){
         col = preCol;
@@ -154,6 +156,61 @@ public class Piece {
         return null;
     }
 
+    public boolean pieceOnDiagonal(int targetCol, int targetRow) {
+        if(targetRow < preRow) {
+            // Up left
+            for(int c = preCol-1; c > targetCol; c--){
+                int diff = Math.abs(c - preCol);
+                for(Piece piece : GamePanel.simPieces) {
+                    if(piece.col == c && piece.row == preRow - diff){
+                        if(piece != this) {
+                            hittingP = piece;
+                            return true;
+                        }
+                    }
+                }
+            }
+            // Up right
+            for(int c = preCol+1; c < targetCol; c++) {
+                int diff = Math.abs(c - preCol);
+                for(Piece piece : GamePanel.simPieces) {
+                    if(piece.col == c && piece.row == preRow - diff){
+                        if(piece != this) {
+                            hittingP = piece;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        if(targetRow > preRow) {
+                        // down left
+                        for(int c = preCol-1; c > targetCol; c--){
+                            int diff = Math.abs(c - preCol);
+                            for(Piece piece : GamePanel.simPieces) {
+                                if(piece.col == c && piece.row == preRow + diff){
+                                    if(piece != this) {
+                                        hittingP = piece;
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        for(int c = preCol+1; c < targetCol; c++) {
+                            int diff = Math.abs(c - preCol);
+                            for(Piece piece : GamePanel.simPieces) {
+                                if(piece.col == c && piece.row == preRow + diff){
+                                    if(piece != this) {
+                                        hittingP = piece;
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+        }
+
+        return false;
+    }
     public boolean isValidSquare(int targetCol, int targetRow){
 
         hittingP = gettingHit(targetCol,targetRow);
