@@ -147,15 +147,13 @@ public class GamePanel extends JPanel implements Runnable {
         canMove = false;
         validSquare = false;
         activeP.hitP = null;
-        copyPiece(pieces, simPieces); // Copy pieces into the simulation, otherwise hovering over a pieces will remove it.
 
         activeP.x = mouse.x - Board.HalfSquareSize;
         activeP.y = mouse.y - Board.HalfSquareSize;
         activeP.col = activeP.getCol(activeP.x);
         activeP.row = activeP.getRow(activeP.y);
-
+        
         if(activeP.canMove(activeP.col,activeP.row)){
-            
             canMove = true;
 
             if(activeP.hittingP != null){

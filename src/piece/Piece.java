@@ -104,8 +104,6 @@ public class Piece {
                         hittingP = piece;
                         return true;
                     }
-                    
-                    
                 }
             }
         }
