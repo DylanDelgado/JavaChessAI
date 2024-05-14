@@ -20,10 +20,11 @@ public class GamePanel extends JPanel implements Runnable {
     public static ArrayList<Piece> pieces = new ArrayList<>();
     public static ArrayList<Piece> simPieces = new ArrayList<>();
     Piece activeP;
+    public static Piece castlingP;
     //Define the color index2
     public static final int white = 0;
     public static final int black = 1;
-    int currentcolor = white;
+    static int currentcolor = white;
 
     public GamePanel() {
         setPreferredSize(new Dimension(Width,Height));
@@ -45,33 +46,51 @@ public class GamePanel extends JPanel implements Runnable {
         pieces.add(new Pawn(white,6,6));
         pieces.add(new Pawn(white,7,6));
         pieces.add(new rook(white,0,7));
-        pieces.add(new Knight(white,1,7));
-        pieces.add(new Bishop(white,2,7));
-        pieces.add(new Queen(white,3,5));
+        // pieces.add(new Knight(white,1,7));
+        // pieces.add(new Bishop(white,2,7));
+        pieces.add(new Queen(white,3,7));
         pieces.add(new King(white,4,7));
         pieces.add(new Bishop(white,5,7));
         pieces.add(new Knight(white,6,7));
         pieces.add(new rook(white,7,7));
         //Black pieces
-        pieces.add(new Pawn(black,0,1));
-        pieces.add(new Pawn(black,1,1));
-        pieces.add(new Pawn(black,2,1));
-        pieces.add(new Pawn(black,3,1));
-        pieces.add(new Pawn(black,4,1));
-        pieces.add(new Pawn(black,5,1));
-        pieces.add(new Pawn(black,6,1));
+        // pieces.add(new Pawn(black,0,1));
+        // pieces.add(new Pawn(black,1,1));
+        // pieces.add(new Pawn(black,2,1));
+        // pieces.add(new Pawn(black,3,1));
+        // pieces.add(new Pawn(black,4,1));
+        // pieces.add(new Pawn(black,5,1));
+        // pieces.add(new Pawn(black,6,1));
         pieces.add(new Pawn(black,7,1));
-        pieces.add(new rook(black,0,0));
-        pieces.add(new Knight(black,1,0));
-        pieces.add(new Bishop(black,2,0));
-        pieces.add(new Queen(black,3,0));
+        // pieces.add(new rook(black,0,0));
+        // pieces.add(new Knight(black,1,0));
+        // pieces.add(new Bishop(black,2,0));
+        // pieces.add(new Queen(black,3,0));
         pieces.add(new King(black,4,0));
         pieces.add(new Bishop(black,5,0));
-        pieces.add(new Knight(black,6,0));
+        // pieces.add(new Knight(black,6,0));
         pieces.add(new rook(black,7,0));
 
     }
-    private void copyPiece(ArrayList<Piece> source, ArrayList<Piece> target) {
+    public static void checkCastling() {
+        if(castlingP != null) {
+            if(castlingP.col == 0) {
+                castlingP.col += 3;
+            } else if(castlingP.col == 7) {
+                castlingP.col -= 2;
+            }
+            castlingP.x = castlingP.getX(castlingP.col);
+        }
+    }
+    private void changePlayer(){
+        if(currentcolor == white){
+            currentcolor = black;
+        } else{
+            currentcolor = white;
+        }
+        activeP = null;
+    }
+    public static void copyPiece(ArrayList<Piece> source, ArrayList<Piece> target) {
         target.clear();
         for(int i = 0; i < source.size(); i++){
             target.add(source.get(i));
@@ -104,42 +123,52 @@ public class GamePanel extends JPanel implements Runnable {
 
     //This method is going to handle updating the board (piece position and count)
     private void update() {
-    // WHEN THE MOUSE IS PRESSED PIECE IS SELECTED //
-        if(mouse.pressed){
-            if(activeP == null){
-
-                for(Piece piece : simPieces){
-                    if(piece.color ==currentcolor &&
-                    piece.col == mouse.x/Board.SquareSize &&
-                    piece.row == mouse.y/Board.SquareSize){
-
+        // WHEN THE MOUSE IS PRESSED PIECE IS SELECTED //
+        if (mouse.pressed) {
+            if (activeP == null) {
+                for (Piece piece : simPieces) {
+                    if (piece.color == currentcolor &&
+                        piece.col == mouse.x / Board.SquareSize &&
+                        piece.row == mouse.y / Board.SquareSize) {
                         activeP = piece;
                     }
-
                 }
-            }
-            else{
+            } else {
                 simulate();
             }
-    }
+        }
+    
         // WHEN MOUSE IS RELEASED 
+        if (mouse.pressed == false) {
+            if (activeP != null) {
+                if (validSquare) {
 
-        if(mouse.pressed == false){
-            if(activeP != null){
-                if(validSquare){
-                    if(activeP.hitP != null){
+                    if (activeP.hitP != null) {
                         simPieces.remove(activeP.hitP.getIndex());
                     }
                     activeP.updatePosition();
+                    checkCastling();
+                    if(castlingP != null) {
+                        castlingP.updatePosition();
+                        castlingP = null;
+                    }
                     copyPiece(simPieces, pieces);
-
-                } else{
+                    changePlayer();
+                    changePlayer();
+                } else {
                     activeP.resetPosition();
                 }
                 activeP = null;
             }
-        }    
+        }
+    
+        // Check if it's the computer's turn
+        // if (currentcolor == black) { // Assuming black is the computer
+        //     ChessBot.generateMoves(pieces);
+        //     changePlayer();
+        // }
     }
+    
 
 
     private void simulate() { 
@@ -147,6 +176,13 @@ public class GamePanel extends JPanel implements Runnable {
         canMove = false;
         validSquare = false;
         activeP.hitP = null;
+        
+        if(castlingP != null) {
+            castlingP.col = castlingP.preCol;
+            castlingP.x = castlingP.getX(castlingP.col);
+            castlingP = null;
+        }
+
 
         activeP.x = mouse.x - Board.HalfSquareSize;
         activeP.y = mouse.y - Board.HalfSquareSize;
@@ -172,7 +208,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw Board
         board.draw(g2);
         // Draw Pieces
-        for(Piece p : simPieces){
+        for(Piece p : pieces){
             p.draw(g2);
         }
         if(activeP != null){
