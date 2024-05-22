@@ -228,4 +228,12 @@ public class Piece {
     public void draw(Graphics2D g2) {
         g2.drawImage(image, x, y, Board.SquareSize, Board.SquareSize, null, null);
     }
+    @Override
+    public Piece clone() {
+        try {
+            return (Piece) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return new Piece(this.color, this.col, this.row);
+        }
+    }
 }

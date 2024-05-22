@@ -6,8 +6,7 @@ import javax.swing.JPanel;
 import piece.*;
 
 public class GamePanel extends JPanel implements Runnable {
-
-    public static final int Width = 1100;
+    public static final int Width = 1100; 
     public static final int Height = 800;
     final int FPS = 60;
     Thread gameThread;
@@ -15,12 +14,17 @@ public class GamePanel extends JPanel implements Runnable {
     Mouse mouse = new Mouse();
     boolean canMove;
     boolean validSquare;
-    
+
     //Pieces Array
     public static ArrayList<Piece> pieces = new ArrayList<>();
     public static ArrayList<Piece> simPieces = new ArrayList<>();
     Piece activeP;
     public static Piece castlingP;
+    public static Piece newcastlingP;
+    public static Piece castlingfix;
+
+
+    
     //Define the color index2
     public static final int white = 0;
     public static final int black = 1;
@@ -46,41 +50,31 @@ public class GamePanel extends JPanel implements Runnable {
         pieces.add(new Pawn(white,6,6));
         pieces.add(new Pawn(white,7,6));
         pieces.add(new rook(white,0,7));
-        // pieces.add(new Knight(white,1,7));
-        // pieces.add(new Bishop(white,2,7));
+        pieces.add(new Knight(white,1,7));
+        pieces.add(new Bishop(white,2,7));
         pieces.add(new Queen(white,3,7));
         pieces.add(new King(white,4,7));
         pieces.add(new Bishop(white,5,7));
         pieces.add(new Knight(white,6,7));
         pieces.add(new rook(white,7,7));
         //Black pieces
-        // pieces.add(new Pawn(black,0,1));
-        // pieces.add(new Pawn(black,1,1));
-        // pieces.add(new Pawn(black,2,1));
-        // pieces.add(new Pawn(black,3,1));
-        // pieces.add(new Pawn(black,4,1));
-        // pieces.add(new Pawn(black,5,1));
-        // pieces.add(new Pawn(black,6,1));
+        pieces.add(new Pawn(black,0,1));
+        pieces.add(new Pawn(black,1,1));
+        pieces.add(new Pawn(black,2,1));
+        pieces.add(new Pawn(black,3,1));
+        pieces.add(new Pawn(black,4,1));
+        pieces.add(new Pawn(black,5,1));
+        pieces.add(new Pawn(black,6,1));
         pieces.add(new Pawn(black,7,1));
-        // pieces.add(new rook(black,0,0));
-        // pieces.add(new Knight(black,1,0));
-        // pieces.add(new Bishop(black,2,0));
-        // pieces.add(new Queen(black,3,0));
+        pieces.add(new rook(black,0,0));
+        pieces.add(new Knight(black,1,0));
+        pieces.add(new Bishop(black,2,0));
+        pieces.add(new Queen(black,3,0));
         pieces.add(new King(black,4,0));
         pieces.add(new Bishop(black,5,0));
-        // pieces.add(new Knight(black,6,0));
+        pieces.add(new Knight(black,6,0));
         pieces.add(new rook(black,7,0));
 
-    }
-    public static void checkCastling() {
-        if(castlingP != null) {
-            if(castlingP.col == 0) {
-                castlingP.col += 3;
-            } else if(castlingP.col == 7) {
-                castlingP.col -= 2;
-            }
-            castlingP.x = castlingP.getX(castlingP.col);
-        }
     }
     private void changePlayer(){
         if(currentcolor == white){
@@ -142,31 +136,34 @@ public class GamePanel extends JPanel implements Runnable {
         if (mouse.pressed == false) {
             if (activeP != null) {
                 if (validSquare) {
+                    // The move is confirmed
 
                     if (activeP.hitP != null) {
                         simPieces.remove(activeP.hitP.getIndex());
                     }
+
                     activeP.updatePosition();
                     checkCastling();
-                    if(castlingP != null) {
-                        castlingP.updatePosition();
-                        castlingP = null;
+                    if(newcastlingP != null){
+                        newcastlingP.updatePosition();
                     }
                     copyPiece(simPieces, pieces);
                     changePlayer();
-                    changePlayer();
+                    
                 } else {
                     activeP.resetPosition();
                 }
                 activeP = null;
+                castlingP = null;
+                newcastlingP = null;
             }
         }
     
         // Check if it's the computer's turn
-        // if (currentcolor == black) { // Assuming black is the computer
-        //     ChessBot.generateMoves(pieces);
-        //     changePlayer();
-        // }
+        if (currentcolor == black) { // Assuming black is the computer
+            ChessBot.generateMoves(pieces);
+            changePlayer();
+        }
     }
     
 
@@ -176,13 +173,8 @@ public class GamePanel extends JPanel implements Runnable {
         canMove = false;
         validSquare = false;
         activeP.hitP = null;
-        
-        if(castlingP != null) {
-            castlingP.col = castlingP.preCol;
-            castlingP.x = castlingP.getX(castlingP.col);
-            castlingP = null;
-        }
-
+        castlingP =  null;
+        newcastlingP = null;
 
         activeP.x = mouse.x - Board.HalfSquareSize;
         activeP.y = mouse.y - Board.HalfSquareSize;
@@ -191,14 +183,27 @@ public class GamePanel extends JPanel implements Runnable {
         
         if(activeP.canMove(activeP.col,activeP.row)){
             canMove = true;
+            validSquare = true;
 
             if(activeP.hittingP != null){
                 activeP.hitP = activeP.hittingP;
             }
-            validSquare = true;
+            if(castlingP != null){
+                newcastlingP = castlingP;
+            }
         }
     }
 
+    public static void checkCastling() {
+        if(newcastlingP != null) {
+            if(newcastlingP.col == 0) {
+                newcastlingP.col += 3;
+            } else if(newcastlingP.col == 7) {
+                newcastlingP.col -= 2;
+            }
+            newcastlingP.x = castlingP.getX(castlingP.col);
+        }
+    }
     
     //This method will handle drawing the board and pieces
     public void paintComponent (Graphics g) {

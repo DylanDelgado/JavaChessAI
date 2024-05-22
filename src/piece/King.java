@@ -28,21 +28,29 @@ public class King extends Piece {
 
             //Castleling
             if(moved == false) { 
-                //left castling
-                if(targetCol == preCol-2 && targetRow == preRow && pieceIsOnStraightLine(targetCol-1, targetRow) == false) {
+                //right castling
+                if(targetCol == preCol+2 && targetRow == preRow && pieceIsOnStraightLine(targetCol, targetRow) == false && isValidSquare(targetCol, targetRow)) {
                     for(Piece piece : GamePanel.simPieces){
-                        if(piece.col == preCol - 4 && piece.row == preRow && piece.moved == false){
+                        if(piece.col == preCol + 3 && piece.row == preRow && piece.moved == false){
                         GamePanel.castlingP = piece;
                         return true;
                         }
                     }
                 }
-                //right castling
-                if(targetCol == preCol+2 && targetRow == preRow && pieceIsOnStraightLine(targetCol, targetRow) == false) {
+                //left castling
+                if(targetCol == preCol-2 && targetRow == preRow && pieceIsOnStraightLine(targetCol, targetRow) == false && isValidSquare(targetCol, targetRow)) {
+                    Piece p[] = new Piece[2];
                     for(Piece piece : GamePanel.simPieces){
-                        if(piece.col == preCol + 3 && piece.row == preRow && piece.moved == false){
-                        GamePanel.castlingP = piece;
-                        return true;
+                        if(piece.col == preCol-3 && piece.row == targetRow) {
+                            p[0] = piece;
+                        }
+                        if(piece.col == preCol-4 && piece.row == targetRow) {
+                            p[1] = piece;
+                        }
+
+                        if(p[1] != null && p[1].moved == false && p[0] == null){
+                            GamePanel.castlingP = p[1];
+                            return true;
                         }
                     }
                 }
