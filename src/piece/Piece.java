@@ -19,6 +19,7 @@ public class Piece {
     public Piece hitP;
     public boolean moved;
     public int length;
+    public int pieceValue;
 
     public Piece(int color, int col, int row){
         this.color = color;

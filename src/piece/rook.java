@@ -3,6 +3,7 @@ package piece;
 import main.GamePanel;
 
 public class rook extends Piece {
+    int pieceValue = 500;
     public rook(int color, int col, int row) {
         super(color, col, row);
 

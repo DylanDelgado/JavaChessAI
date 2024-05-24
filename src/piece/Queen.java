@@ -3,6 +3,8 @@ package piece;
 import main.GamePanel;
 
 public class Queen extends Piece {
+    int pieceValue = 900;
+
     public Queen(int color, int col, int row) {
         super(color, col, row);
 

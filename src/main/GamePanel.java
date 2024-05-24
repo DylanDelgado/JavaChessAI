@@ -18,7 +18,7 @@ public class GamePanel extends JPanel implements Runnable {
     //Pieces Array
     public static ArrayList<Piece> pieces = new ArrayList<>();
     public static ArrayList<Piece> simPieces = new ArrayList<>();
-    Piece activeP;
+    static Piece activeP;
     public static Piece castlingP;
     public static Piece newcastlingP;
     public static Piece castlingfix;
@@ -76,7 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
         pieces.add(new rook(black,7,0));
 
     }
-    private void changePlayer(){
+    public static void changePlayer(){
         if(currentcolor == white){
             currentcolor = black;
         } else{
@@ -85,10 +85,12 @@ public class GamePanel extends JPanel implements Runnable {
         activeP = null;
     }
     public static void copyPiece(ArrayList<Piece> source, ArrayList<Piece> target) {
+
         target.clear();
         for(int i = 0; i < source.size(); i++){
             target.add(source.get(i));
         }
+        
     }
     public void launchGame() {
         gameThread = new Thread(this);
